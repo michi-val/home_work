@@ -1,0 +1,8 @@
+Odhalování chyb:
+
+1) nečitelné speciální znaky v tabulkách "circuits" a "drivers"
+
+Chyba v záznamu výsledků, chybné driverID, dohledáno pomocí tabulky qualifying 
+  resultID: 23 657 původně driver ID 999, zjištěno že se jedná o driverID 826
+Stejná chyba u resultID 22
+
