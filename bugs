@@ -2,7 +2,15 @@ Odhalování chyb:
 
 1) nečitelné speciální znaky v tabulkách "circuits" a "drivers"
 
-Chyba v záznamu výsledků, chybné driverID, dohledáno pomocí tabulky qualifying 
+2) Chyba v záznamu výsledků, chybné driverID, dohledáno pomocí tabulky qualifying 
   resultID: 23 657 původně driver ID 999, zjištěno že se jedná o driverID 826
-Stejná chyba u resultID 22
+  Stejná chyba u resultID 22 - po domluvě se zadavatelem opraveno
 
+3) Chyba qualifyID 5665: q2 nesplňuje formát - pro jistotu hodnota nastavena na [NULL]
+
+4) Nastavení prázdných buněk a buněk se stringem "NULL" na [NULL] u tab. qualifying sloupce q1, q2, q3
+
+5) Chyba v tab results - resultId 23 769 - fastesLapSpeed = 1 - vzhledem k dosaženému času a rychlosti ostatních jezdců není moýžné aby hodnota byla 1
+ - pro jistotu hodnota nastavena na [NULL]
+
+6) Chybějící raceId tab results u záznamů resultId 13 913 - 13 942: z kontextu odvozeno, že se jedná o raceId 567
