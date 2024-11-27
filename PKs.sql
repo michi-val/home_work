@@ -70,26 +70,3 @@ FROM results AS r
 ORDER BY driverId DESC 
 
 
-
-
-
-
-
-
-
-
-SELECT 
-	wins_sub.wins
-	, d.forename 
-	, d.surname
-	, wins_sub.driverId 
-FROM (	SELECT 
-			driverId 
-			, COUNT(`position`) AS wins
-		FROM results
-		WHERE `position` =  1
-		GROUP BY driverId
-		HAVING count(`position`) >= 3
-		ORDER BY wins DESC) AS wins_sub
-LEFT JOIN drivers AS d 
-ON wins_sub.driverId = d.driverId 
