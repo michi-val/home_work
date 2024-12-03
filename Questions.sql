@@ -30,6 +30,7 @@ ORDER BY number_of_races DESC;
 
 -- V jakém státě se závodilo na nejvíce okruzích?
 
+-- název, lokace, stát, počet
 SELECT 
 	c.name 
 	,c.location 
@@ -39,7 +40,25 @@ FROM races AS r
 LEFT JOIN circuits AS c 
 ON r.circuitId = c.circuitId 
 GROUP BY c.country , c.location, c.name
-ORDER BY number_of_circuits DESC, country, location, name
+ORDER BY number_of_circuits DESC, country, location, name;
+
+
+
+	-- vere pouze se státy a počtem
+	SELECT 
+		DISTINCT country
+		, number_of_circuits
+	FROM 
+		(SELECT 
+			c.name  
+			,location 
+			,country 
+			,COUNT(country) OVER (PARTITION BY country) AS number_of_circuits
+		FROM races AS r 
+		LEFT JOIN circuits AS c 
+		ON r.circuitId = c.circuitId 
+		GROUP BY c.country , c.location, c.name
+		ORDER BY number_of_circuits DESC, country, location, name) AS n_o_c;
 
 
 -- Jaké bylo nejrychlejší zajeté kolo – kde, kdy, kým a s jakým časem? 
@@ -55,7 +74,8 @@ LEFT JOIN drivers AS dr
 ON lap_t.driverId = dr.driverId 
 LEFT JOIN races AS rac
 ON lap_t.raceId = rac.raceId
-ORDER BY lap_t.`time` 
+ORDER BY lap_t.`time`
+LIMIT 10;
 
 -- Jaký jezdec strávil nejvíce času v pit stopech? 
 
@@ -63,20 +83,18 @@ SELECT
 	DISTINCT p_s.driverId 
 	, dr.forename 
 	, dr.surname 
-	, SUM(p_s.duration) OVER (PARTITION BY driverId) AS time_in_pit_stop_ms
+	, SUM(p_s.duration) OVER (PARTITION BY driverId) AS time_in_pit_stop_sec
 FROM pitstops AS p_s
 LEFT JOIN drivers AS dr
 ON p_s.driverId = dr.driverId 
-ORDER BY time_in_pit_stop_ms DESC, driverId, forename, surname
+ORDER BY time_in_pit_stop_sec DESC, driverId, forename, surname;
 
 -- V kolika pripadech vyhral jezdec kvalifikaci i závod?
 
-
-
-
-
-
-
+SELECT 
+	COUNT(resultId) AS 'wins_Q_and_R'
+FROM results AS r 
+WHERE grid = 1 AND `position` = 1;
 
 
 

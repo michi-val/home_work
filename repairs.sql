@@ -204,3 +204,48 @@ UPDATE results
 SET raceId = 567
 WHERE resultId BETWEEN 13913 AND 13942
 
+-- správný formát tab pitstops_4 col duration 
+
+UPDATE pitstops
+SET duration = 
+	CONCAT('00:', duration)
+WHERE duration NOT LIKE '%:__.___' 
+;
+
+UPDATE pitstops
+SET duration = 
+	CONCAT('00:', duration)
+WHERE duration NOT LIKE '%:__:__.___' 
+;
+
+
+ALTER TABLE f1.pitstops
+MODIFY COLUMN duration time(3) DEFAULT NULL NULL;
+
+-- kontrola zda sedí duration a milliseconds v tab pitStops
+SELECT *
+FROM pitstops AS ps
+WHERE ((HOUR(duration) * 3600000) + (MINUTE(duration)* 60000) + (SECOND(duration) * 1000) + (MICROSECOND(duration) / 1000)) != milliseconds 
+
+
+-- tab results 
+-- pro přehlednost přináno "+" u časů výsledků jezdců, kteří se neumístili jako 1.
+
+UPDATE results 
+SET `time` = NULL
+WHERE TRIM(`time`) = '';
+
+UPDATE results 
+SET `time` = NULL
+WHERE TRIM(`time`) = '';
+
+UPDATE results
+SET `time` = CONCAT('+', `time`)
+WHERE `position` != 1 AND `time` NOT LIKE '+%'
+
+
+
+
+
+
+

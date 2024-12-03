@@ -70,3 +70,32 @@ FROM results AS r
 ORDER BY driverId DESC 
 
 
+
+
+ALTER TABLE qualifying2
+DROP PRIMARY KEY;
+
+ALTER TABLE qualifying2 
+ADD CONSTRAINT
+PRIMARY KEY (qualifyId)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
