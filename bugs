@@ -14,3 +14,49 @@ Odhalování chyb:
  - pro jistotu hodnota nastavena na [NULL]
 
 6) Chybějící raceId tab results u záznamů resultId 13 913 - 13 942: z kontextu odvozeno, že se jedná o raceId 567
+
+
+Jaké kontroly jste použili a co byste doporučili ještě odkontrolovat.
+
+1) Kontrola unikátnosti hodnot byla provedena přiřazením prinárních a cizích klíčů. 
+  V některých případech bykla hodnota u cizího klíče [NULL], proto provedena manuální kontrola všech cizích klíčů, jestli tyto sloupce neobsahují prázdné hodnoty.
+  U PK toto nehrozí.
+
+2) circuits
+  Prověřeno, jestli jsou všechny 'circuitRef' a 'name' unikátní DISTINCT.
+  Prověřeno jestli jsou hodnoty v možných rozmeích 'latitude -90 to 90, longtitude -180 to 180'.
+  Pro ověření přesné polohy by bylo možné použít Python geopy.geocoders. 
+
+3) constructors
+  DISTINCT hodnoty 'constructorRef' a 'name'
+
+4) driers
+  Zkontrolováno, jestli 'dob' není nesmyslná hodnota "(YEAR(dob) + 17) > 2017"
+
+5) laptimes
+  PK, FK
+  Převod z varchar na 'time(3)'-formát: doplnění chybějící části '00:' formátu.
+  Kontrola, zda sedí sloupce 'time' a 'milliseconds' - převedení času na milisekundy a porovnání.
+  Kontrola zda se v 'lap' a 'postion' neobjevují nějaké na první pohled nesmyslné hodnoty.
+  
+  
+
+Zkontrolovat data jestli jsou v poradku, jednorazove odhalit chyby, vycistit a pripradne navrhnout pravidelne testy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
