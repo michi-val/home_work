@@ -305,8 +305,21 @@ ON q.raceId = r.raceId
 WHERE  q.`position` != r.grid 
 
 -- -------- 
--- --------
--- --------
+-- qualifying - nenalezeny žádné duplicity
+SELECT 
+    *	
+FROM qualifying AS q 
+LEFT JOIN races AS rac
+ON q.raceId = rac.raceId
+WHERE (q.raceId, q.driverId) IN
+			(SELECT 
+				raceId
+				, driverId
+		    FROM qualifying
+		    GROUP BY raceId, driverId
+		    HAVING COUNT(*) > 1)
+ORDER BY q.raceId, q.driverId;	
+
 
 
 

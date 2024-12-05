@@ -38,7 +38,7 @@ PRIMARY KEY (constructorId)
 ALTER TABLE status 
 ADD CONSTRAINT
 PRIMARY KEY (statusId)
-~~
+
 ALTER TABLE results 
 ADD CONSTRAINT
 PRIMARY KEY (resultId)

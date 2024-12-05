@@ -395,24 +395,60 @@ SELECT
 FROM qualifying AS q 
 LEFT JOIN races AS rac
 ON q.raceId = rac.raceId
-WHERE (res.raceId, res.driverId) IN
+WHERE (q.raceId, q.driverId) IN
 			(SELECT 
 				raceId
 				, driverId
-		    FROM results
+		    FROM qualifying
 		    GROUP BY raceId, driverId
 		    HAVING COUNT(*) > 1)
-ORDER BY res.raceId, res.driverId;	
+ORDER BY q.raceId, q.driverId;	
+
+
+
+SELECT 
+				raceId
+				, driverId
+				, COUNT(*) AS d_count
+		    FROM qualifying
+		    GROUP BY raceId, driverId
+		    HAVING COUNT(*) > 0
 
 
 
 
-
-
-
-
-
+SELECT 
+    *	
+FROM qualifying AS q 
+LEFT JOIN races AS rac
+ON q.raceId = rac.raceId
+WHERE (q.raceId, q.driverId) IN
+			(SELECT 
+				raceId
+				, driverId
+		    FROM qualifying
+		    GROUP BY raceId, driverId
+		    HAVING COUNT(*) > 1)
+ORDER BY q.raceId, q.driverId;	
 	
 	
+
+
+
+SELECT 
+				raceId
+				, driverId
+				, COUNT(*) AS d_count
+		    FROM pitstops AS p 
+		    GROUP BY raceId, driverId
+		    HAVING COUNT(*) > 0
+
+
+
+
+
+
+
+
 
 	

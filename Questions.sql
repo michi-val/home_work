@@ -97,33 +97,3 @@ FROM results AS r
 WHERE grid = 1 AND `position` = 1;
 
 
-
-
-
-
-
--- 
-
-
-
-
-
-
-SELECT *
-FROM qualifying AS q 
-WHERE raceId = 18 AND grid = 10
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
