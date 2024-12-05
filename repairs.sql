@@ -1,7 +1,5 @@
-SELECT *
-FROM drivers AS d 
 
--- odhalení špatného driverID
+-- Na základě odhalení špatného driverID v 'results' zjištěno o jaké jezdce se jedná pomocí tabulky qualifying
 SELECT *
 FROM qualifying AS q 
 WHERE raceId = 982 AND constructorId = 5 AND number = 26
@@ -59,50 +57,8 @@ SELECT *
 FROM laptimes AS l 
 WHERE milliseconds != ((HOUR(`time`) * 3600000) + (MINUTE(`time`)* 60000) + (SECOND(`time`) * 1000) + (MICROSECOND(`time`) / 1000))
 
--- 
-UPDATE qualifying 
-SET q1 = REPLACE(q1 , '%\x00%', '');
 
-
-SELECT CONCAT('00:', q1)
-FROM qualifying2 AS q 
-
--- prázdné buňky nastaveny jako NULL
-UPDATE qualifying2 
-SET q1 = NULL
-WHERE TRIM(q1) = '';
-
-UPDATE qualifying2 
-SET q2 = NULL
-WHERE TRIM(q2) = '' OR q2 LIKE 'null';
-
-UPDATE qualifying2 
-SET q3 = NULL
-WHERE TRIM(q3) = '' OR q3 LIKE 'null';
-
-UPDATE qualifying2
-SET q1 = 
-	STR_TO_DATE(CONCAT('00:', q1), '%H:%i:%s.%f')
-WHERE q1 NOT LIKE '%:__:__.___' 
-AND TRIM(q1) IS NOT NULL ;
-
-UPDATE qualifying2
-SET q2 = 
-	STR_TO_DATE(CONCAT('00:', q2), '%H:%i:%s.%f')
-WHERE q2 NOT LIKE '%:__:__.___' 
-AND TRIM(q2) IS NOT NULL ;
-
-UPDATE qualifying2
-SET q2 = 
-	STR_TO_DATE(CONCAT('00:0', q2), '%H:%i:%s.%f')
-WHERE q2 NOT LIKE '%_:__.___' 
-AND q2 IS NOT NULL ;
-
-SELECT
-	time(q1)
-FROM qualifying AS q 
-
-
+-- -----------------------
 -- qualifying - Nastavení prázdných buněk a buněk se stringem "NULL" na real NULL u tab. qualifying sloupce q1, q2, q3
 
 UPDATE qualifying 
@@ -204,7 +160,7 @@ UPDATE results
 SET raceId = 567
 WHERE resultId BETWEEN 13913 AND 13942
 
--- správný formát tab pitstops_4 col duration 
+-- správný formát tab pitstops col duration 
 
 UPDATE pitstops
 SET duration = 
@@ -244,6 +200,113 @@ SET `time` = CONCAT('+', `time`)
 WHERE `position` != 1 AND `time` NOT LIKE '+%'
 
 
+
+-- -------------------------------
+-- -------------------------------
+
+-- Duplikáty -- 
+
+-- Nalezeny duplikáty jezdců ve 40 závodech v tab 'results'
+
+SELECT 
+    *		-- zde by bylo v "ostré" variantě nutno vypsat všechny sloupce a nepožívat * 
+FROM results AS res
+LEFT JOIN races AS rac
+ON res.raceId = rac.raceId
+WHERE (res.raceId, res.driverId) IN
+			(SELECT 
+				raceId
+				, driverId
+		    FROM results
+		    GROUP BY raceId, driverId
+		    HAVING COUNT(*) > 1)
+ORDER BY res.raceId, res.driverId;
+
+-- Nalezeno 113 chyb v tab. results col. 'positionOrder' 
+SELECT *
+FROM (
+	SELECT 
+	resultId
+	, raceId
+	, driverId
+	, positionOrder 
+    , LAG(positionOrder) OVER (PARTITION BY raceId ORDER BY resultId) AS prev_value
+	FROM results AS r ) AS sq_po
+LEFT JOIN races AS rac 
+ON sq_po.raceId = rac.raceId 
+WHERE positionOrder - prev_value != 1;
+
+-- dvojitý CTE s INNER JOIN pro zjištění hodnot, které mají společnou jak duplicitu, tak chybné pořadí 'positionOrder'
+
+WITH DuplicateResults AS (
+    SELECT 
+        res.resultId
+        , res.raceId
+        , res.driverId
+        , res.positionOrder
+        , rac.year
+    FROM results AS res
+    LEFT JOIN races AS rac 
+    ON res.raceId = rac.raceId
+    WHERE (res.raceId, res.driverId) IN (
+        SELECT 
+            raceId 
+            , driverId
+        FROM results
+        GROUP BY raceId, driverId
+        HAVING COUNT(*) > 1
+    )
+),
+PositionOrderGaps AS (
+    SELECT 
+        r.resultId 
+        , r.raceId 
+        , r.driverId 
+        , r.positionOrder
+        , LAG(r.positionOrder) OVER (PARTITION BY r.raceId ORDER BY r.resultId) AS prev_value
+    FROM results AS r
+)
+SELECT 
+    dr.resultId 
+    , dr.raceId
+    , dr.driverId 
+    , dr.positionOrder
+    , dr.year
+FROM DuplicateResults AS dr
+INNER JOIN PositionOrderGaps AS pog
+    ON dr.resultId = pog.resultId
+WHERE pog.positionOrder - pog.prev_value != 1
+ORDER BY dr.raceId, dr.driverId;
+
+
+-- qualifying
+-- v 10 případech se liší 'constructor' - jedná se sice o tým Marussia, ale jednou je jako britský a podruhé jako ruský tým
+SELECT *
+FROM qualifying AS q 
+LEFT JOIN results AS r 
+ON q.raceId = r.raceId 
+	AND q.driverId = r.driverId
+WHERE q.constructorId != r.constructorId;
+
+-- ve 34 případech se neshoduje 'number'
+SELECT *
+FROM qualifying AS q 
+LEFT JOIN results AS r 
+ON q.raceId = r.raceId 
+	AND q.driverId = r.driverId
+WHERE q.`number` != r.`number`;
+
+-- v 1620 případech se neshoduje umístění v kvaliufikaci 'q.position' a startovní pozice 'r.grid'
+SELECT *
+FROM qualifying AS q 
+LEFT JOIN results AS r 
+ON q.raceId = r.raceId 
+	AND q.driverId = r.driverId
+WHERE  q.`position` != r.grid 
+
+-- -------- 
+-- --------
+-- --------
 
 
 

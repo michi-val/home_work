@@ -44,41 +44,6 @@ ADD CONSTRAINT
 PRIMARY KEY (resultId)
 
 
-SELECT 
-	*
-FROM pitstops AS p
-WHERE forename = (
-	SELECT forename 
-	FROM drivers
-	WHERE drivers.forename = 'Nick')
-
-SELECT forename FROM drivers
-
-SELECT DISTINCT 
-	driverId 
-FROM results AS r 
-ORDER BY driverId DESC 
-
-SELECT DISTINCT 
-	driverId 
-FROM drivers AS d 
-ORDER BY driverId DESC 
-
-SELECT DISTINCT 
-	*
-FROM results AS r 
-ORDER BY driverId DESC 
-
-
-
-
-ALTER TABLE qualifying2
-DROP PRIMARY KEY;
-
-ALTER TABLE qualifying2 
-ADD CONSTRAINT
-PRIMARY KEY (qualifyId)
-
 
 
 

@@ -83,7 +83,7 @@ SELECT
 	DISTINCT p_s.driverId 
 	, dr.forename 
 	, dr.surname 
-	, SUM(p_s.duration) OVER (PARTITION BY driverId) AS time_in_pit_stop_sec
+	,sec_to_time((SUM(p_s.milliseconds) OVER (PARTITION BY driverId)) / 1000) AS time_in_pit_stop_sec
 FROM pitstops AS p_s
 LEFT JOIN drivers AS dr
 ON p_s.driverId = dr.driverId 
@@ -102,8 +102,16 @@ WHERE grid = 1 AND `position` = 1;
 
 
 
+-- 
 
 
+
+
+
+
+SELECT *
+FROM qualifying AS q 
+WHERE raceId = 18 AND grid = 10
 
 
 
