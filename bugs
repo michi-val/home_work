@@ -36,6 +36,8 @@ Jaké kontroly jste použili a co byste doporučili ještě odkontrolovat.
   Prověřeno, jestli jsou všechny 'circuitRef' a 'name' unikátní DISTINCT.
   Prověřeno jestli jsou hodnoty v možných rozmeích 'latitude -90 to 90, longtitude -180 to 180'.
   Pro ověření přesné polohy by bylo možné použít Python geopy.geocoders. 
+  Rakouský okruh ve Spielburgu se dříve jmenoval A1-Ring a nyní je to Red Bull Ring 
+      - u otázky "V jakém státě se závodilo na nejvíce okruzích?" je tedy k diskuzi, jestli odebrat Rakousku jeden okruh (v powerBI jsou ponechány oba)
 
 4) constructors
   DISTINCT hodnoty 'constructorRef' a 'name'
@@ -63,21 +65,45 @@ Jaké kontroly jste použili a co byste doporučili ještě odkontrolovat.
   v 1620 případech se neshoduje umístění v kvaliufikaci 'q.position' a startovní pozice 'r.grid'. Mnohé z těchto rozdílů mohou pramenit z různých penalizací, další analýza potřebná. 
 
 
+Co byste doporučili ještě odkontrolovat?
+  Při každém novém zápisu bude částečná kontrola provedena díky PK a FK.
+  Je nutné kontrolovat: 
+    - případné duplicity jezdců v daných závodech 
+    - při zadání nových např. jezdců/okruhů nutno zkontrolovat, jestli nejsou již v databázi
+    - počet startujících jezdců (momentálně 20 závodníků)
+    - unikátnost startovních a výsledných pozic
+    - jestli zázna nepřekročí počet kol, který daný závod má
+    - Jsou-li hodnoty reálné  - možno nastavit různé filtry pro hodnoty například pro fastestLapSpeed která nebude třeba 500 km/h
+                              - jezdci, kteří se umístí v určitém pořadí nemohou mít nižší čas než předešlí jezdci
+                              - jeden kontruktor by neměl mít v závodě více než 2 monoposty
+                              - ti, kteří úspěšně dokončili závod nebudou mít status jiný než 1: finished
+                            
+-- 
+Jsou tabulky aktuální? Jak často byste doporučili tabulky aktualizovat?
 
-9) 
+Tabulky nejsou aktuální.
+pitstops 2011 - 17
+races 1950 - 2018
+laptimes 1996 - 2017
+results 1950 - 2017
+qualifying 1994 - 2017
 
+Tabulky circuits, constructors, status bych aktualizoval dle potřeby při přidávání nových hodnot, které nejsou až tak časté.
+Tab races - pravděpodobně jednou ročně po schválení plánu závodů. 
+Tab drivers - před každým závodem, protože jezdci se mohou měnit poměrně rychle. 
+Tab qualifying - aktualizace po každém kvalifikačním dni, aby byla data k dispozici před závodem.
+Tab results - po každém závodě
+Tab laptimes - pokud by sew jednalo o informace pro týmy či "online" pro diváky, tak v době závodu prakticky neustále. Pokud se jedná o info např. na web, tak po každém závodě. (možné aplikovat i u qualifying)
+Tab pitstops - viz laptimes 
 
+--
+Navrhnete kategorizaci statusu.
 
-
-
-
-
-
-
-
-
-
-Zkontrolovat data jestli jsou v poradku, jednorazove odhalit chyby, vycistit a pripradne navrhnout pravidelne testy.
+Statusy by se daly kategorizovat například 
+  - finished
+  - DNF - did not finished
+  - DSQ - disqualified
+  - DNPQ - did not prequalified 
 
 
 
