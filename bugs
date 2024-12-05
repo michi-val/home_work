@@ -18,28 +18,64 @@ Odhalování chyb:
 
 Jaké kontroly jste použili a co byste doporučili ještě odkontrolovat.
 
-1) Kontrola unikátnosti hodnot byla provedena přiřazením prinárních a cizích klíčů. 
+1) Kontrola unikátnosti hodnot byla provedena přiřazením primárních a cizích klíčů. 
   V některých případech bykla hodnota u cizího klíče [NULL], proto provedena manuální kontrola všech cizích klíčů, jestli tyto sloupce neobsahují prázdné hodnoty.
   U PK toto nehrozí.
 
-2) circuits
+2) Kontrola duplicit
+  results
+    a)  V tab 'results' nalezeny duplikáty jezdců ve 40 závodech. Jednalo se o závody v letech 1950 - 1978 
+        => vzhledem k tomu, že tabulky 'pitStops' (2011-17) a 'laptimes' (1996-2017) nemají záznamy z tohoto období, není možné dopárovat případné shody a udělat korekci
+    b) Nalezeno 113 chyb v tab. results col. 'positionOrder'. 
+      'resultId' 22, 'positionOrder' by mělo být 22 a ne 56
+      'resultId' 23661, 'positionOrder' by mělo být 20 a ne 41
+      U 'raceId' 934, 941, 916 jsou pozice proházené, ale nemají duplicitu, ani žádné nechybí 
+      etc....
+
+3) circuits
   Prověřeno, jestli jsou všechny 'circuitRef' a 'name' unikátní DISTINCT.
   Prověřeno jestli jsou hodnoty v možných rozmeích 'latitude -90 to 90, longtitude -180 to 180'.
   Pro ověření přesné polohy by bylo možné použít Python geopy.geocoders. 
 
-3) constructors
+4) constructors
   DISTINCT hodnoty 'constructorRef' a 'name'
 
-4) driers
-  Zkontrolováno, jestli 'dob' není nesmyslná hodnota "(YEAR(dob) + 17) > 2017"
+5) driers
+  Zkontrolováno, jestli 'dob' není nesmyslná hodnota "(YEAR(dob) + 17) > 2017" 
+  Převod data narození ze stringu dd/mm/yyyy na date formát yyyy-mm-dd.
 
-5) laptimes
+6) laptimes
   PK, FK
   Převod z varchar na 'time(3)'-formát: doplnění chybějící části '00:' formátu.
   Kontrola, zda sedí sloupce 'time' a 'milliseconds' - převedení času na milisekundy a porovnání.
   Kontrola zda se v 'lap' a 'postion' neobjevují nějaké na první pohled nesmyslné hodnoty.
   
-  
+7) pitStops
+  Převod z varchar na 'time(3)'-formát: doplnění chybějící části '00:' formátu.
+  Kontrola, zda sedí sloupce 'time' a 'milliseconds' - převedení času na milisekundy a porovnání.
+
+8) qualifying 
+  Kontrola zda se u FK neobjevují [NULL] honoty. 
+  Nastavení prázných buněk na [NULL].
+  Převedení 'q1-3' na time(3).
+  V 10 případech se liší 'constructor' - jedná se sice o tým Marussia, ale jednou je jako britský a podruhé jako ruský tým.
+  Ve 34 případech se neshoduje 'number'.
+  v 1620 případech se neshoduje umístění v kvaliufikaci 'q.position' a startovní pozice 'r.grid'. Mnohé z těchto rozdílů mohou pramenit z různých penalizací, další analýza potřebná. 
+
+
+
+9) 
+
+
+
+
+
+
+
+
+
+
+
 
 Zkontrolovat data jestli jsou v poradku, jednorazove odhalit chyby, vycistit a pripradne navrhnout pravidelne testy.
 
